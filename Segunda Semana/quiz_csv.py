@@ -159,3 +159,32 @@ for engagement_record in paid_students_engagements_in_first_week:
 
 days_visited_by_account = sum_grouped_items(engagement_by_account, 'has_visited')
 describe_data(days_visited_by_account)
+
+
+###################################################
+#                      11                         #
+###################################################
+subway_project_lessons_keys = ['746169184', '3176718735']
+
+pass_subway_project = set()
+for submissions in paid_submissions:
+    project = submissions['lesson_key']
+    rating = submissions['assigned_rating']
+
+    if project in subway_project_lessons_keys and \
+            (rating =='PASSED' or rating == 'DISTINCTION'):
+        pass_subway_project.add(submissions['account_key'])
+
+print(len(pass_subway_project))
+
+passing_engagement = []
+non_passing_engagement = []
+
+for engagement_record in paid_students_engagements_in_first_week:
+    if engagement_record['account_key'] in pass_subway_project:
+        passing_engagement.append(engagement_record)
+    else:
+        non_passing_engagement.append(engagement_record)
+
+print(len(passing_engagement))
+print(len(non_passing_engagement))
