@@ -121,9 +121,14 @@ paid_enrollments = remove_free_trial_cancels(non_udacity_enrollments, paid_stude
 paid_engagement = remove_free_trial_cancels(non_udacity_engagement, paid_students)
 paid_submissions = remove_free_trial_cancels(non_udacity_submissions, paid_students)
 
-
 paid_students_engagements_in_first_week = []
 for engagement_record in paid_engagement:
+    # add field_name 'has_visited'
+    if engagement_record['num_courses_visited'] > 0:
+        engagement_record['has_visited'] = 1
+    else:
+        engagement_record['has_visited'] = 0
+
     account_key = engagement_record['account_key']
     join_date = paid_students[account_key]
     engagement_record_date = engagement_record['utc_date']
@@ -151,3 +156,6 @@ for engagement_record in paid_students_engagements_in_first_week:
     if engagement_record['account_key'] == student_with_max_minutes:
         foo = 1 #just to have some code here
 #        print(engagement_record)
+
+days_visited_by_account = sum_grouped_items(engagement_by_account, 'has_visited')
+describe_data(days_visited_by_account)
