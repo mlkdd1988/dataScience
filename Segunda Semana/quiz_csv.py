@@ -2,6 +2,8 @@ import unicodecsv
 from datetime import datetime as dt
 import numpy as np
 from collections import defaultdict
+import matplotlib.pyplot as plt
+
 
 def parse_date(date):
     if date =='':
@@ -188,3 +190,49 @@ for engagement_record in paid_students_engagements_in_first_week:
 
 print(len(passing_engagement))
 print(len(non_passing_engagement))
+
+passing_engagement_by_account = group_data(passing_engagement, 'account_key')
+non_passing_engagement_by_account = group_data(non_passing_engagement, 'account_key')
+
+print('Non-passing minutes:')
+non_passing_minutes = sum_grouped_items(non_passing_engagement_by_account, 'total_minutes_visited')
+describe_data(non_passing_minutes)
+
+plt.hist(list(non_passing_minutes.values()))
+plt.show()
+
+print('Passing minutes:')
+passing_minutes = sum_grouped_items(passing_engagement_by_account, 'total_minutes_visited')
+describe_data(passing_minutes)
+
+plt.hist(list(passing_minutes.values()))
+plt.show()
+
+print('Non-passing lessons:')
+non_passing_lessons = sum_grouped_items(non_passing_engagement_by_account,'lessons_completed')
+describe_data(non_passing_lessons)
+
+plt.hist(list(non_passing_lessons.values()))
+plt.show()
+
+print('Passing lessons:')
+passing_lessons = sum_grouped_items(passing_engagement_by_account,'lessons_completed')
+describe_data(passing_lessons)
+
+plt.hist(list(passing_lessons.values()))
+plt.show()
+
+print('Non-passing visits:')
+non_passing_visits = sum_grouped_items(non_passing_engagement_by_account,'has_visited')
+describe_data(non_passing_visits)
+
+plt.hist(list(non_passing_visits.values()))
+plt.show()
+
+print('Passing visits:')
+passing_visits = sum_grouped_items(passing_engagement_by_account,'has_visited')
+describe_data(passing_visits)
+
+plt.hist(list(passing_visits.values()))
+plt.show()
+
