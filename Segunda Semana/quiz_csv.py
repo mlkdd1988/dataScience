@@ -3,7 +3,7 @@ from datetime import datetime as dt
 import numpy as np
 from collections import defaultdict
 import matplotlib.pyplot as plt
-
+import seaborn as sns
 
 def parse_date(date):
     if date =='':
@@ -67,12 +67,17 @@ def sum_grouped_items(grouped_data, field_name ):
         summed_data[key]=total
     return summed_data
 
-def describe_data(data):
+def describe_data(data, plot_title, x_label, y_label):
     total = list(data.values())
     print('Mean:{:.2f}'.format(np.mean(total)))
     print('Standard Deviation:{:.2f}'.format(np.std(total)))
     print('Minimum:{:.2f}'.format(np.min(total)))
     print('Maximum:{:.2f}'.format(np.max(total)))
+    plt.hist(total, bins=20)
+    plt.title(plot_title)
+    plt.xlabel(x_label)
+    plt.ylabel(y_label)
+    plt.show()
 
 enrollments = read_csv('enrollments.csv')
 daily_engagement = read_csv('daily_engagement.csv')
@@ -141,10 +146,10 @@ engagement_by_account = group_data(paid_students_engagements_in_first_week,'acco
 
 
 total_minutes_by_account = sum_grouped_items(engagement_by_account, 'total_minutes_visited')
-describe_data(total_minutes_by_account)
+describe_data(total_minutes_by_account,'total minutes','contas','minutos')
 
 total_completed_lessons_by_account = sum_grouped_items(engagement_by_account, 'lessons_completed')
-describe_data(total_completed_lessons_by_account)
+describe_data(total_completed_lessons_by_account,'qtde lições completas','contas','lições')
 
 #Verify the student with max minutes
 student_with_max_minutes = None
@@ -160,7 +165,7 @@ for engagement_record in paid_students_engagements_in_first_week:
 #        print(engagement_record)
 
 days_visited_by_account = sum_grouped_items(engagement_by_account, 'has_visited')
-describe_data(days_visited_by_account)
+describe_data(days_visited_by_account,'qtde visitas','dias','visitas')
 
 
 ###################################################
@@ -196,43 +201,27 @@ non_passing_engagement_by_account = group_data(non_passing_engagement, 'account_
 
 print('Non-passing minutes:')
 non_passing_minutes = sum_grouped_items(non_passing_engagement_by_account, 'total_minutes_visited')
-describe_data(non_passing_minutes)
-
-plt.hist(list(non_passing_minutes.values()))
-plt.show()
+describe_data(non_passing_minutes,'total minutes dos que não passaram','contas','minutos')
 
 print('Passing minutes:')
 passing_minutes = sum_grouped_items(passing_engagement_by_account, 'total_minutes_visited')
-describe_data(passing_minutes)
-
-plt.hist(list(passing_minutes.values()))
-plt.show()
+describe_data(passing_minutes,'total minutes dos que passaram','contas','minutos')
 
 print('Non-passing lessons:')
 non_passing_lessons = sum_grouped_items(non_passing_engagement_by_account,'lessons_completed')
-describe_data(non_passing_lessons)
-
-plt.hist(list(non_passing_lessons.values()))
-plt.show()
+describe_data(non_passing_lessons,'qtde de lições dos que não passaram','contas','lições')
 
 print('Passing lessons:')
 passing_lessons = sum_grouped_items(passing_engagement_by_account,'lessons_completed')
-describe_data(passing_lessons)
-
-plt.hist(list(passing_lessons.values()))
-plt.show()
+describe_data(passing_lessons,'qtde de lições dos que passaram','contas','lições')
 
 print('Non-passing visits:')
 non_passing_visits = sum_grouped_items(non_passing_engagement_by_account,'has_visited')
-describe_data(non_passing_visits)
-
-plt.hist(list(non_passing_visits.values()))
-plt.show()
+describe_data(non_passing_visits,'qtde de visitas do que não passaram','dias','visitas')
 
 print('Passing visits:')
 passing_visits = sum_grouped_items(passing_engagement_by_account,'has_visited')
-describe_data(passing_visits)
+describe_data(passing_visits,'qtde de visitas do que passaram','dias','visitas')
 
-plt.hist(list(passing_visits.values()))
-plt.show()
+
 
