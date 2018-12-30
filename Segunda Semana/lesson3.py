@@ -1,7 +1,11 @@
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 # Subway ridership for 5 stations on 10 different days
+from sympy import subfactorial
+
 ridership = np.array([
     [0, 0, 2, 5, 0],
     [1478, 3877, 3674, 2328, 2539],
@@ -283,3 +287,141 @@ def convert_grades(grades):
     return grades.applymap(convert_grade)
 
 print(convert_grades(grades_df))
+
+# DataFrame apply()
+if True:
+    def convert_grades_curve(exam_grades):
+        # Pandas has a bult-in function that will perform this calculation
+        # This will give the bottom 0% to 10% of students the grade 'F',
+        # 10% to 20% the grade 'D', and so on. You can read more about
+        # the qcut() function here:
+        # http://pandas.pydata.org/pandas-docs/stable/generated/pandas.qcut.html
+        return pd.qcut(exam_grades,
+                       [0, 0.1, 0.2, 0.5, 0.8, 1],
+                       labels=['F', 'D', 'C', 'B', 'A'])
+
+
+    # qcut() operates on a list, array, or Series. This is the
+    # result of running the function on a single column of the
+    # DataFrame.
+    print(convert_grades_curve(grades_df['exam1']))
+
+    # qcut() does not work on DataFrames, but we can use apply()
+    # to call the function on each column separately
+    print(grades_df.apply(convert_grades_curve))
+
+def standardize_column(column):
+    return (column - column.mean())/column.std(ddof = 0)
+
+def standardize(df):
+    '''
+    Fill in this function to standardize each column of the given
+    DataFrame. To standardize a variable, convert each value to the
+    number of standard deviations it is above or below the mean.
+    '''
+    return df.applymap(standardize_column)
+
+
+df = pd.DataFrame({
+    'a': [4, 5, 3, 1, 2],
+    'b': [20, 10, 40, 50, 30],
+    'c': [25, 20, 5, 15, 10]
+})
+
+# Change False to True for this block of code to see what it does
+
+# DataFrame apply() - use case 2
+if True:
+    print(df.apply(np.mean))
+    print(df.apply(np.max))
+
+def second_largest_in_column(column):
+    sorted_column = column.sort_values(ascending=False)
+    return sorted_column.iloc[1]
+
+def second_largest(df):
+    '''
+    Fill in this function to return the second-largest value of each
+    column of the input DataFrame.
+    '''
+    return df.apply(second_largest_in_column)
+
+
+print(second_largest(df))
+
+subway_df = pd.DataFrame({
+    'UNIT': ['R003', 'R003', 'R003', 'R003', 'R003', 'R004', 'R004', 'R004',
+             'R004', 'R004'],
+    'DATEn': ['05-01-11', '05-02-11', '05-03-11', '05-04-11', '05-05-11',
+              '05-01-11', '05-02-11', '05-03-11', '05-04-11', '05-05-11'],
+    'hour': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    'ENTRIESn': [ 4388333,  4388348,  4389885,  4391507,  4393043, 14656120,
+                 14656174, 14660126, 14664247, 14668301],
+    'EXITSn': [ 2911002,  2911036,  2912127,  2913223,  2914284, 14451774,
+               14451851, 14454734, 14457780, 14460818],
+    'latitude': [ 40.689945,  40.689945,  40.689945,  40.689945,  40.689945,
+                  40.69132 ,  40.69132 ,  40.69132 ,  40.69132 ,  40.69132 ],
+    'longitude': [-73.872564, -73.872564, -73.872564, -73.872564, -73.872564,
+                  -73.867135, -73.867135, -73.867135, -73.867135, -73.867135]
+})
+
+weather_df = pd.DataFrame({
+    'DATEn': ['05-01-11', '05-01-11', '05-02-11', '05-02-11', '05-03-11',
+              '05-03-11', '05-04-11', '05-04-11', '05-05-11', '05-05-11'],
+    'hour': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    'latitude': [ 40.689945,  40.69132 ,  40.689945,  40.69132 ,  40.689945,
+                  40.69132 ,  40.689945,  40.69132 ,  40.689945,  40.69132 ],
+    'longitude': [-73.872564, -73.867135, -73.872564, -73.867135, -73.872564,
+                  -73.867135, -73.872564, -73.867135, -73.872564, -73.867135],
+    'pressurei': [ 30.24,  30.24,  30.32,  30.32,  30.14,  30.14,  29.98,  29.98,
+                   30.01,  30.01],
+    'fog': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    'rain': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    'tempi': [ 52. ,  52. ,  48.9,  48.9,  54. ,  54. ,  57.2,  57.2,  48.9,  48.9],
+    'wspdi': [  8.1,   8.1,   6.9,   6.9,   3.5,   3.5,  15. ,  15. ,  15. ,  15. ]
+})
+
+def combine_dfs(subway_df, weather_df):
+    '''
+    Fill in this function to take 2 DataFrames, one with subway data and one with weather data,
+    and return a single dataframe with one row for each date, hour, and location. Only include
+    times and locations that have both subway data and weather data available.
+    '''
+    return subway_df.merge(weather_df,on=['DATEn','hour','longitude','latitude'],how='inner')
+
+print(combine_dfs(subway_df,weather_df))
+
+values = np.array([1, 3, 2, 4, 1, 6, 4])
+example_df = pd.DataFrame({
+    'value': values,
+    'even': values % 2 == 0,
+    'above_three': values > 3
+}, index=['a', 'b', 'c', 'd', 'e', 'f', 'g'])
+
+# Change False to True for this block of code to see what it does
+
+# groupby() without as_index
+if True:
+    first_even = example_df.groupby('even').first()
+    print(first_even)
+    #print(first_even['even']) # Causes an error. 'even' is no longer a column in the DataFrame
+
+
+# groupby() with as_index=False
+if True:
+    first_even = example_df.groupby('even', as_index=False).first()
+    print(first_even)
+    print(first_even['even']) # Now 'even' is still a column in the DataFrame
+
+filename = 'nyc_subway_weather.csv'
+subway_df = pd.read_csv(filename)
+
+## Make a plot of your choice here showing something interesting about the subway data.
+## Matplotlib documentation here: http://matplotlib.org/api/pyplot_api.html
+## Once you've got something you're happy with, share it on the forums!
+
+data_by_location = subway_df.groupby(['latitude','longitude'],as_index=False).mean()
+scaled_entries = (data_by_location['ENTRIESn_hourly']/data_by_location['ENTRIESn_hourly'].std())
+plt.scatter(data_by_location['latitude'],data_by_location['longitude'], s = scaled_entries)
+
+plt.show()
